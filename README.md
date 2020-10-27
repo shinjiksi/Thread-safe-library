@@ -7,9 +7,12 @@ $ make
 $ pc <poolsize> <#items/producer> <#producers> <#consumers> <sleep interval(microsecs)>
 
 # Example
-example -> $ pc 10 1000 8 4 0\n 
+example -> $ pc 10 1000 8 4 0
+
 Output below when the example command was typed.
+
 8 producers 4 consumers 8000 items 10 pool size
+
 I am producer thread 7 (with thread id = 7F5DD27D4700)
 I am producer thread 4 (with thread id = 7F5DD0FD1700)
 I am producer thread 6 (with thread id = 7F5DD1FD3700)
