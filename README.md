@@ -10,6 +10,7 @@ $ pc <poolsize> <#items/producer> <#producers> <#consumers> <sleep interval(micr
 example -> $ pc 10 1000 8 4 0
 
 Output below when the example command was typed.
+
 8 producers 4 consumers 8000 items 10 pool size
 
 I am producer thread 7 (with thread id = 7F5DD27D4700)
@@ -59,6 +60,7 @@ consumer 1 finished
 consumer 2 finished
 
 consumer 3 finished
+
 #items produced = 8000   #items consumed = 8000 
  
 
