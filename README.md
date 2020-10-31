@@ -3,6 +3,7 @@ Class: CS453 p2
 Author: Shinji Kasai
 
 # To compile
+$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./list/lib:./lib
 $ make
 $ pc <poolsize> <#items/producer> <#producers> <#consumers> <sleep interval(microsecs)>
 
