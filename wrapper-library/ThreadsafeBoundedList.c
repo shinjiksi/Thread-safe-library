@@ -1,3 +1,7 @@
+/*
+Class: CS 453 Fall 2020
+Author: Shinji Kasai
+*/
 
 #include    <pthread.h>
 #include    <stdlib.h>
@@ -30,13 +34,6 @@ struct tsb_list * tsb_createList(int (*equals)(const void *, const void *),
     return tsbList;
 }
 
-void tsb_freeList(struct tsb_list * list)
-{
-    pthread_mutex_lock(&(list -> mutex));
-    freeList(list -> list);
-    pthread_mutex_unlock(&(list -> mutex));
-}
-
 int tsb_getSize(struct tsb_list * list)
 {
     int size = getSize(list -> list);
@@ -48,37 +45,26 @@ int tsb_getCapacity(struct tsb_list * list)
     return list -> capacity;
 }
 
-void tsb_setCapacity(struct tsb_list * list, int capacity)
+void tsb_reverseList(struct tsb_list *  list)
 {
     pthread_mutex_lock(&(list -> mutex));
-    list -> capacity = capacity;
+    reverseList(list -> list);
     pthread_mutex_unlock(&(list -> mutex));
 }
 
-Boolean tsb_isEmpty(struct tsb_list * list)
-{
-    int size = tsb_getSize(list);
-    return size == 0;
-}
-
-Boolean tsb_isFull(struct tsb_list * list)
-{
-    int size = tsb_getSize(list);
-    return size >= tsb_getCapacity(list);
-}
-
-void tsb_addAtFront(struct tsb_list * list, NodePtr node)
+void tsb_printList(struct tsb_list * list)
 {
     pthread_mutex_lock(&(list -> mutex));
-
-    while(tsb_isFull(list) && list -> stop_requested == 0)
-    {
-        pthread_cond_wait(&(list -> listNotFull), &(list -> mutex));
-    }
-
-    addAtFront(list -> list, node);
+    printList(list -> list);
     pthread_mutex_unlock(&(list -> mutex));
-    pthread_cond_signal(&(list -> listNotEmpty));
+}
+
+void tsb_finishUp(struct tsb_list * list)
+{
+    while(tsb_isEmpty(list) == 0) {}
+    list -> stop_requested = 1;
+    pthread_cond_broadcast(&(list -> listNotEmpty));
+    pthread_cond_broadcast(&(list -> listNotFull));
 }
 
 void tsb_addAtRear(struct tsb_list * list, NodePtr node)
@@ -93,7 +79,49 @@ void tsb_addAtRear(struct tsb_list * list, NodePtr node)
     addAtRear(list -> list, node);
     pthread_mutex_unlock(&(list -> mutex));
     pthread_cond_signal(&(list -> listNotEmpty));
+} 
+
+void tsb_freeList(struct tsb_list * list)
+{
+    pthread_mutex_lock(&(list -> mutex));
+    freeList(list -> list);
+    pthread_mutex_unlock(&(list -> mutex));
 }
+void tsb_setCapacity(struct tsb_list * list, int capacity)
+{
+    pthread_mutex_lock(&(list -> mutex));
+    list -> capacity = capacity;
+    pthread_mutex_unlock(&(list -> mutex));
+}
+void tsb_addAtFront(struct tsb_list * list, NodePtr node)
+{
+    pthread_mutex_lock(&(list -> mutex));
+
+    while(tsb_isFull(list) && list -> stop_requested == 0)
+    {
+        pthread_cond_wait(&(list -> listNotFull), &(list -> mutex));
+    }
+
+    addAtFront(list -> list, node);
+    pthread_mutex_unlock(&(list -> mutex));
+    pthread_cond_signal(&(list -> listNotEmpty));
+}
+
+
+Boolean tsb_isEmpty(struct tsb_list * list)
+{
+    int size = tsb_getSize(list);
+    return size == 0;
+}
+
+Boolean tsb_isFull(struct tsb_list * list)
+{
+    int size = tsb_getSize(list);
+    return size >= tsb_getCapacity(list);
+}
+
+
+
 
 NodePtr tsb_removeFront(struct tsb_list * list)
 {
@@ -171,24 +199,3 @@ NodePtr tsb_search(struct tsb_list * list, const void *obj)
     return node;
 }
 
-void tsb_reverseList(struct tsb_list *  list)
-{
-    pthread_mutex_lock(&(list -> mutex));
-    reverseList(list -> list);
-    pthread_mutex_unlock(&(list -> mutex));
-}
-
-void tsb_printList(struct tsb_list * list)
-{
-    pthread_mutex_lock(&(list -> mutex));
-    printList(list -> list);
-    pthread_mutex_unlock(&(list -> mutex));
-}
-
-void tsb_finishUp(struct tsb_list * list)
-{
-    while(tsb_isEmpty(list) == 0) {}
-    list -> stop_requested = 1;
-    pthread_cond_broadcast(&(list -> listNotEmpty));
-    pthread_cond_broadcast(&(list -> listNotFull));
-}
